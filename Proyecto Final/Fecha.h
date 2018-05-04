@@ -47,73 +47,99 @@ public:
 	}
 
 	//Metodo que suma los dias que se proporcionen a la fecha
-	friend Fecha operator+ (Fecha F1, int iAdd) {
-		
+	Fecha operator + (int iAdd) {
+
+		int iDia = this->iDia;
+		int iMes = this->iMes;
+		int iAnio = this->iAnio;
+
+		int iD, iM, iA;
+
 		//Si el mes tiene 31 dias
-		if (F1.getMes()==1 || F1.getMes()==3 || F1.getMes()==5 || F1.getMes()==7 || F1.getMes()==8 || F1.getMes()==10 || F1.getMes()==12) {
-			if ((F1.getDia()+iAdd) <= 31) {
-				F1.setFecha(F1.getDia()+iAdd, F1.getMes(), F1.getAnio());
+		if (iMes==1 || iMes==3 || iMes==5 || iMes==7 || iMes==8 || iMes==10 || iMes==12) {
+			if ((iDia+iAdd) <= 31) {
+				
+				iD = iDia+iAdd;
+				iM = iMes;
+				iA = iAnio;
 			}
 
-			else if ((F1.getDia()+iAdd) > 31 && F1.getMes() < 12) {
-				F1.setFecha(F1.getDia()+iAdd-31, F1.getMes()+1, F1.getAnio());
+			else if ((iDia+iAdd)>31 && iMes<12) {				
+				
+				iD = iDia+iAdd;
+				iM = iMes+1;
+				iA = iAnio;
 			}
 
 			else {
-				F1.setFecha(F1.getDia()+iAdd-31, F1.getMes()+1, 1);
+					
+				iD = iDia+iAdd-31;
+				iM = iMes+1;
+				iA = iAnio+1;
 			}
 		}
 
 		//Si el mes tiene 30 dias
-		else if (F1.getMes()==4 || F1.getMes()==6 || F1.getMes()==9 || F1.getMes()==11) {
+		else if (iMes==4 || iMes==6 || iMes==9 || iMes==11) {
 			
 			//Si la suma de los dias no da mas de 30
-			if ((F1.getDia()+iAdd) <= 30) {
-
-				//No se suma 1 mes
-				F1.setFecha(F1.getDia()+iAdd, F1.getMes(), F1.getAnio());
+			if ((iDia+iAdd) <= 30) {
+				
+				iD = iDia+iAdd;
+				iM = iMes;
+				iA = iAnio;
 			}
 
 			//Si la suma de los dias da mas de 30
 			else  {
-				//Se le suma 1 mes
-				F1.setFecha(F1.getDia()+iAdd-31, F1.getMes()+1, F1.getAnio());
-			}
 
+				iD = iDia+iAdd-31;
+				iM = iMes+1;
+				iA = iAnio;
+			}
 		}
 
 		//Si el mes tiene 28 dias
 		else {
-			if (F1.esBisiesto() == true) {
+			if (esBisiesto() == true) {
 
 				//Si la suma de los dias no da mas de 29
-				if ((F1.getDia()+iAdd) <= 29) {
+				if ((iDia+iAdd) <= 29) {
 
-					//No se suma 1 mes
-					F1.setFecha(F1.getDia()+iAdd, F1.getMes(), F1.getAnio());
+					iD = iDia+iAdd;
+					iM = iMes;
+					iA = iAnio;
 				}
 
 				else {
-					//Se le suma 1 mes
-					F1.setFecha(F1.getDia()+iAdd-29, F1.getMes()+1, F1.getAnio());
+				
+					iD = iDia;
+					iM = iMes+1;
+					iA = iAnio;
 				}
 			}
 
 			else {
 
 				//Si la suma de los dias no da mas de 28
-				if ((F1.getDia()+iAdd) <= 28) {
+				if ((iDia+iAdd) <= 28) {
 
-					//No se suma 1 mes
-					F1.setFecha(F1.getDia()+iAdd, F1.getMes(), F1.getAnio());
+					iD = iDia+iAdd;
+					iM = iMes;
+					iA = iAnio;
 				}
 
 				else {
-					//Se le suma 1 mes
-					F1.setFecha(F1.getDia()+iAdd-28, F1.getMes()+1, F1.getAnio());	
+					
+					iD = iDia+iAdd-28;
+					iM = iMes+1;
+					iA = iAnio;
 				}
 			}
 		}
+
+		Fecha Retorno(iD, iM, iA);
+		return Retorno;
 	} 
 
 	//Metodo que regresa si una fecha es MAYOR que otra
@@ -226,31 +252,29 @@ public:
 		}
 	}
 
-//-----------------------------------------------------------------Duda-----------------------------------------------------------------
-//	//Output
-//	friend ostream operator << (ostream o, Fecha F1) {
-//		
-//		//Esto debe ser un void? Como imprimir en pantalla?
-//		o << F1.getDia() << " " << F1.getMes() << " " << F1.getAnio();
-//		
-//		//https://es.wikibooks.org/wiki/Programaci%C3%B3n_en_C%2B%2B/Sobrecarga_de_Operadores#Sobrecarga_del_operador_%3C%3C_(_iostream_)
-//	}
-//
-////-----------------------------------------------------------------Duda-----------------------------------------------------------------
-//	//Input
-//	friend istream operator >> (istream i, Fecha F1) {
-//		int iDd;
-//		int iMm;
-//		int iAa;
-//	
-//		//Obtenemos los datos de mes dia y anio
-//		i >> iDd >> iMm >> iAa;
-//		
-//		//Cambiamos la fecha
-//		F1.setFecha(iDd, iMm, iAa);
-//		
-//		//https://es.wikibooks.org/wiki/Programaci%C3%B3n_en_C%2B%2B/Sobrecarga_de_Operadores#Sobrecarga_del_operador_%3C%3C_(_iostream_)
-//	} 
+	//Output
+	friend ostream operator << (ostream o, Fecha F1) {
+		
+		//Esto debe ser un void? Como imprimir en pantalla?
+		o << F1.getDia() << " " << F1.getMes() << " " << F1.getAnio();
+		
+		//https://es.wikibooks.org/wiki/Programaci%C3%B3n_en_C%2B%2B/Sobrecarga_de_Operadores#Sobrecarga_del_operador_%3C%3C_(_iostream_)
+	}
+
+	//Input
+	friend istream operator >> (istream i, Fecha F1) {
+		int iDd;
+		int iMm;
+		int iAa;
+	
+		//Obtenemos los datos de mes dia y anio
+		i >> iDd >> iMm >> iAa;
+		
+		//Cambiamos la fecha
+		F1.setFecha(iDd, iMm, iAa);
+		
+		//https://es.wikibooks.org/wiki/Programaci%C3%B3n_en_C%2B%2B/Sobrecarga_de_Operadores#Sobrecarga_del_operador_%3C%3C_(_iostream_)
+	} 
 
 	//Regresa el nombre del mes en formato de tres letras
 	string nombreMes() {

@@ -1,3 +1,10 @@
+/*
+	Adrian Garcia Lopez
+	A01351166
+	
+	Proyecto final
+*/
+
 #include "Libro.h"
 #include "Disco.h"
 #include "Software.h"
@@ -11,16 +18,16 @@ int main() {
 
 	//Para almacenar Reservaciones 
 	Reserva Reservaciones[50];
-
+	
 	//Declaramos los atchivos
 	ifstream ArchivoMaterial;			//Archivo de Materiales
 	ifstream ArchivoReservaciones;	//Archivo de Reservaciones
-
+	
 	//Datos de clase Material
 	int iIdMaterial;	//Tambien se usa en reservaciones
 	string sTitulo;
 	char cTipo;
-
+	
 	//Datos de clase Libro
 	int iNumPag;
 	string sAutor;
@@ -33,7 +40,6 @@ int main() {
 
 	//Fecha de la reservacion y del final de esta
 	Fecha fecha();
-	Fecha fechaFin();
 
 	//Datos de la clase reservacion
 	int iIdCliente;
@@ -62,11 +68,8 @@ int main() {
 	bool Valida;
 
 	//Abrimos los archivos
-	ArchivoMaterial.open("Material.txt");
-	ArchivoReservaciones.open("Reserva.txt");
-
- //------------------------Duda-----------------------------------------
- //Como almacenamos datos de clases hijas en arreglo de clase Materieles
+	ArchivoMaterial.open("materiales.txt");
+	ArchivoReservaciones.open("reserva.txt");
 
 	//Leemos mientras haya datos en iIdMaterial
 	while (ArchivoMaterial >> iIdMaterial) {
@@ -78,7 +81,6 @@ int main() {
 		//Los datos se obtienen dependiendo de su tipo
 		switch (cTipo) {
 			case 'L':	//Tipo Libro
-
 				//Obtenemos Numero de pagina y Autor
 				ArchivoMaterial >> iNumPag;
 				ArchivoMaterial >> sAutor;
@@ -88,7 +90,6 @@ int main() {
 			break;
 
 			case 'D':	//Tipo Disco
-
 				//Obtenemos Duracion
 				ArchivoMaterial >> iDuracion;
 
@@ -97,7 +98,6 @@ int main() {
 			break;
 
 			case 'S':	//Tipo Software
-
 				//Obtenemos nombre del Sistema Operativo
 				ArchivoMaterial >> sSistemaOperativo;
 				
@@ -105,12 +105,9 @@ int main() {
 				Materiales[iNumMate] = new Software(iIdMaterial, sTitulo, cTipo, sSistemaOperativo);
 			break;
 		}
+
 		iNumMate++;	//Aumentamos la cantidad de Materiales
 	}
-
- //---------------------------Duda---------------------------------------------
- //Tenemos que usar el operador >> para obtener los datos de fecha?
- //Podemos obtener dia, mes y ano de manera separada?
 	
 	while (ArchivoReservaciones >> iDD) {
 		
@@ -139,10 +136,10 @@ int main() {
 		cout << "d) Consular las reservaciones de una fecha \n";
 		cout << "e) Hacer una reservacion \n";
 		cout << "f) Terminar \n";
-		cout << "Opcion: ";
 
 		do {	//Valiadmos que el usuario ingrese una opcion correcta
 			
+			cout << "Opcion: ";
 			cin >> Opcion;
 
 			//Si no esta dentro de las opciones, el programa vuelve a pedirla
@@ -181,8 +178,6 @@ int main() {
 				cout << endl;	//Terminamos linea por estetica 
 			break;	
 
-// Falta fecha inicio y fecha fin de reservacion
-
 			//Consultar las reservaciones de un material
 			case 'c' : 
 
@@ -202,33 +197,52 @@ int main() {
 			break;	
 		
 			//Consultar las reservaciones de una fecha
-			case 'd' : 
-
+			case 'd' : {
+				
 				//Pedimos la fecha 
-				cout << "Inserta una fecha en formato DD/MM/AAAA: ";
+				cout << "Inserta una fecha en formato DD MM AAAA: ";
 				cin >> iDD;
 				cin >> iMM;
 				cin >> iAA;
 	
 				//Nuevo objeto fecha
-				Fecha fechaReserva(iDD, iMM, iAA);
+				Fecha NuevaFecha(iDD, iMM, iAA);
+
+				int iIndex;
 
 				//Buscamos en todas las reservaciones
 				for(i=0; i<iNumRese; i++) {
 
 					//Si una reservacion es igual a la fecha dada
-					if (Reservaciones[i].getFechaReserva() == fechaReserva) {
+					if (Reservaciones[i].getFechaReserva() == NuevaFecha ){
 
-						//La desplegamos
-						Reservaciones[i].muestraReserva();
+						//Buscamos su ID
+						for (j=0; j<iNumMate; j++) {
+							if (Reservaciones[i].getIdMaterial() == Materiales[j]->getIdMaterial()) {
+								iIndex = j;
+							}
+						}
+
+						//Si la fecha esta entre la reservacion
+						if (Reservaciones[i].getFechaReserva()<=NuevaFecha && Reservaciones[i].getFechaReserva()+Materiales[iIndex]->diasPrestamo()>=NuevaFecha) {
+
+							//La desplegamos
+							Reservaciones[i].muestraReserva();
+						}
+
+						//Si no pedimos otra fecha
+						else {
+							cout << "Por favor introduce una fecha valida" << endl;
+						}
 					}
 				} 
 
 				cout << endl;	//Terminamos linea por estetica
-			break;
-				
+			break; }
+			
 			//Hacer una reservacion
-			case 'e' : 
+			case 'e' : {
+				
 
 				//Pedimos ID de cliente	
 				cout << "Inserta tu ID de cliente: ";
@@ -244,15 +258,13 @@ int main() {
 					cin >> iIdMaterial;
 
 					//Buscanos en todos los materiales
-					for (i=0; i<iNumRese; i++) {
+					for (i=0; i<iNumMate; i++) {
 
 						//Si un material es igual al ID del material dado
 						if (Materiales[i]->getIdMaterial() == iIdMaterial) {
 							
 							//Validamos que el material exista
 							Valida = true;
-							
-							break;	//Terminamos la busqueda
 						}
 					}
 
@@ -260,50 +272,28 @@ int main() {
 					if (Valida == false) {
 						cout << endl << "Inserta un ID correcto\n\n";
 					}
+
 				} while (Valida == false);
 
-				//Lo convertimos a verdadero para verificar que no haya mas fechas
-				Valida = true;
+				//Preguntamos al usuario una fecha
+				cout << "Inserta la fecha de tu reservacion en formato DD MM AAAA";
+				cin >> iDD;
+				cin >> iMM;
+				cin >> iAA;
+	
+				//Nueva Fecha con los parametros dados por el usuario				
+				Fecha FechaDeResercacion(iDD, iMM, iAA);
 
-				do {	//Validamos que el material prestado este disponible
-
-					//Preguntamos al usuario una fecha
-					cout << "Inserta la fecha de tu reservacion en formato DD/MM/AAAA";
-					cin >> iDD;
-					cin >> iMM;
-					cin >> iAA;
-
-					//Definimos fechas de inicio y fin de reservacion
-					fecha.setFecha(iDD, iMM, iAA);
-					fechaFin = fecha+Materiales[i]->diasPrestamo();
-
-					//Buscamos entre todas las Reservaciones
-					for (j=0; j<iNumRese; j++) {
-						
-						//Si encontramos nuestro ID
-						if (Reservaciones[j].getIdMaterial() == iIdMaterial) {
-							
-							fecha ReseStart = Reservaciones[j].getFecha();
-							fecha ReseEnd = ReseStart+Materiales[i]->diasPrestamo();
-
-							//Revisaremos que no se empalmen fechas	
-							if ((fecha>ReseStart&&fecha<ReseEnd)||(fechaFin>ReseStart&&fechaFin<ReseEnd)) {
-								Valida = false;
-							}
-						}
-					}
-				} while(Valida == false);
-
-				//Asignamos los valores a las nuevas reservaciones
+				//Asignamos valores a las reservaciones
+				Reservaciones[iNumRese].setFechaReserva(FechaDeResercacion);
 				Reservaciones[iNumRese].setIdMaterial(iIdMaterial);
 				Reservaciones[iNumRese].setIdCliente(iIdCliente);
-				Reservaciones[iNumRese].setFecha(fecha);
 
 				//Aumentamos la cantidad de reservaciones
 				iNumRese++;
 
 				cout << endl;	//Terminamos linea por estetica
-			break;
+			break; }
 				
 			//Terminar	
 			case 'f' : 
@@ -315,6 +305,25 @@ int main() {
 				ArchivoMaterial.close();
 				ArchivoReservaciones.close();
 
+				//Definimos nuevo archivo para poner las reservas
+				ofstream NuevasReservas;
+		
+				//Abrimos reservas
+				NuevasReservas.open("reserva.txt");
+				
+				//Colocamos datos en el archivo reservas 
+				for (i=0; i<iNumRese; i++) {
+					NuevasReservas << Reservaciones[i].getFechaReserva().getDia() << " ";
+					NuevasReservas << Reservaciones[i].getFechaReserva().getMes() << " ";
+					NuevasReservas << Reservaciones[i].getFechaReserva().getAnio() << " ";
+					NuevasReservas << Reservaciones[i].getIdMaterial() << " ";
+					NuevasReservas << Reservaciones[i].getIdCliente() << " ";
+					NuevasReservas << endl;
+				}
+
+				//Cerramos archivos
+				NuevasReservas.close();
+
 				//Terminamos programa
 				return 0;
 				
@@ -322,6 +331,10 @@ int main() {
 			break;					
 		} 
 	} while (Opcion != 'f');
+
+	//Cerramos ambos archivos
+	ArchivoMaterial.close();
+	ArchivoReservaciones.close();
 
 	//Terminamos programa
 	return 0;
