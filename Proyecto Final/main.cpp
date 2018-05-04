@@ -1,8 +1,8 @@
 /*
-	Adrian Garcia Lopez
-	A01351166
+Adrian Garcia Lopez
+A01351166
 	
-	Proyecto final
+Proyecto final
 */
 
 #include "Libro.h"
@@ -21,7 +21,7 @@ int main() {
 	
 	//Declaramos los atchivos
 	ifstream ArchivoMaterial;			//Archivo de Materiales
-	ifstream ArchivoReservaciones;	//Archivo de Reservaciones
+	ifstream ArchivoReservaciones;		//Archivo de Reservaciones
 	
 	//Datos de clase Material
 	int iIdMaterial;	//Tambien se usa en reservaciones
@@ -165,8 +165,6 @@ int main() {
 				cout << endl;	//Terminamos linea por estetica
 			break;
 
-// Falta fecha inicio y fecha fin de reservacion
-
 			//Consultar la lista de reservaciones
 			case 'b' :
 
@@ -208,6 +206,7 @@ int main() {
 				//Nuevo objeto fecha
 				Fecha NuevaFecha(iDD, iMM, iAA);
 
+				//Indice donde se encuentra el ID del material en el Arreglo Material
 				int iIndex;
 
 				//Buscamos en todas las reservaciones
@@ -226,8 +225,12 @@ int main() {
 						//Si la fecha esta entre la reservacion
 						if (Reservaciones[i].getFechaReserva()<=NuevaFecha && Reservaciones[i].getFechaReserva()+Materiales[iIndex]->diasPrestamo()>=NuevaFecha) {
 
+							//Sacamos el numero de dias que se puede trestar el material
+							int iAdd = Materiales[iIndex]->diasPrestamo();
+							
 							//La desplegamos
 							Reservaciones[i].muestraReserva();
+							
 						}
 
 						//Si no pedimos otra fecha
@@ -243,7 +246,6 @@ int main() {
 			//Hacer una reservacion
 			case 'e' : {
 				
-
 				//Pedimos ID de cliente	
 				cout << "Inserta tu ID de cliente: ";
 				cin >> iIdCliente;
@@ -262,7 +264,7 @@ int main() {
 
 						//Si un material es igual al ID del material dado
 						if (Materiales[i]->getIdMaterial() == iIdMaterial) {
-							
+
 							//Validamos que el material exista
 							Valida = true;
 						}
@@ -275,22 +277,40 @@ int main() {
 
 				} while (Valida == false);
 
+				//Asumiremos que la fecha no esta ocupada
+				Valida = false;
+
 				//Preguntamos al usuario una fecha
-				cout << "Inserta la fecha de tu reservacion en formato DD MM AAAA";
+				cout << "Inserta la fecha de tu reservacion en formato DD MM AAAA: ";
 				cin >> iDD;
 				cin >> iMM;
 				cin >> iAA;
-	
-				//Nueva Fecha con los parametros dados por el usuario				
-				Fecha FechaDeResercacion(iDD, iMM, iAA);
+				
+				Fecha NewFecha(iDD, iMM, iAA);
 
-				//Asignamos valores a las reservaciones
-				Reservaciones[iNumRese].setFechaReserva(FechaDeResercacion);
-				Reservaciones[iNumRese].setIdMaterial(iIdMaterial);
-				Reservaciones[iNumRese].setIdCliente(iIdCliente);
+				//Buscamos que el material no este ocupado
+				for (i=0; i<iNumRese; i++) {
+					if (NewFecha == Reservaciones[i].getFechaReserva() && Reservaciones[i].getIdMaterial() == iIdMaterial) {
+							
+						Valida = true;
+					}
+				}
 
-				//Aumentamos la cantidad de reservaciones
-				iNumRese++;
+				if (Valida == false) {
+					cout << "Material reservado" << endl;
+					//Asignamos valores a las reservaciones
+					Reservaciones[iNumRese].setFechaReserva(NewFecha);
+					Reservaciones[iNumRese].setIdMaterial(iIdMaterial);
+					Reservaciones[iNumRese].setIdCliente(iIdCliente);
+
+					//Aumentamos la cantidad de reservaciones
+					iNumRese++;
+				}
+
+				//Si esta disponible lo registramos
+				if (Valida == true) {
+					cout << "El material no se encuentra disponible" << endl;
+				}
 
 				cout << endl;	//Terminamos linea por estetica
 			break; }
