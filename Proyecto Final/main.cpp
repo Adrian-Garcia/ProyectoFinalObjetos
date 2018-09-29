@@ -289,9 +289,8 @@ int main() {
 				Fecha NewFecha(iDD, iMM, iAA);
 
 				//Buscamos que el material no este ocupado
-				for (i=0; i<iNumRese; i++) {
-					if (NewFecha == Reservaciones[i].getFechaReserva() && Reservaciones[i].getIdMaterial() == iIdMaterial) {
-							
+				for (i=0; i<iNumRese; i++) {		
+					if (NewFecha == Reservaciones[i].getFechaReserva() && Reservaciones[i].getIdMaterial() == iIdMaterial) {		
 						Valida = true;
 					}
 				}
